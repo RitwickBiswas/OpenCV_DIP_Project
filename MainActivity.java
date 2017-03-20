@@ -1,4 +1,9 @@
-package com.example.ritwick.opencvtest2;
+package com.example.ritwick.opencvtest3;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.SurfaceView;
+import android.appwidget.*;
 
 import android.nfc.Tag;
 import android.support.annotation.IdRes;
@@ -30,10 +35,13 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.WindowManager;
 
+
 public class MainActivity extends AppCompatActivity implements CvCameraViewListener2{
 
 
     private JavaCameraView mOpenCvCameraView;
+    Mat imgGray, imgThreshold;
+
 
 
 
@@ -80,17 +88,24 @@ public class MainActivity extends AppCompatActivity implements CvCameraViewListe
 
     @Override
     public void onCameraViewStarted(int width, int height) {
+        imgGray = new Mat(height,width,CvType.CV_8SC1);
+        imgThreshold = new Mat(height,width,CvType.CV_8SC1);
+
 
     }
 
     @Override
     public void onCameraViewStopped() {
+        imgGray.release();
+        imgThreshold.release();
+
 
     }
 
     @Override
     public Mat onCameraFrame(CvCameraViewFrame inputFrame) {
-
-        return inputFrame.gray();
+        imgGray = inputFrame.gray();
+        Imgproc.adaptiveThreshold(imgGray,imgThreshold,255,Imgproc.ADAPTIVE_THRESH_MEAN_C,Imgproc.THRESH_BINARY_INV,11,12);
+        return imgThreshold;
     }
 }
